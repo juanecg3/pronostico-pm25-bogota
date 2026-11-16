@@ -15,7 +15,7 @@ El archivo de origen `data/datos.xls` es una tabla HTML descargada con extensió
 
 ## Instalación y ejecución
 
-Desde la carpeta principal del repositorio, ejecuta estos cuatro comandos:
+Desde la carpeta principal del repositorio, ejecuta estos tres comandos:
 
 ```powershell
 python -m venv .venv
@@ -38,7 +38,7 @@ En esta descarga hay 4.345 horas entre el 1 de enero y el 1 de julio de 2026. Se
 ## Carpetas
 
 - `data/`: datos de origen, datos limpios y resúmenes.
-- `src/`: scripts de preprocesamiento y partición.
+- `src/`: código Python del preprocesamiento; después se añadirán el modelo y las métricas.
 - `notebooks/`: cuadernos para exploración; no se necesitan para ejecutar los scripts.
 - `experiments/`: configuración reproducible y, en el siguiente avance, resultados de la línea base.
 - `docs/`: bitácora de uso de IA.
