@@ -1,0 +1,4 @@
+{
+  "seed": 42,
+  "nota": "La limpieza, la partición temporal y la línea base de persistencia no usan aleatoriedad. Esta semilla se usará en modelos aleatorios posteriores."
+}
