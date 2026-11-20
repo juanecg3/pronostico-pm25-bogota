@@ -1,0 +1,95 @@
+{
+  "fase": "CRISP-ML(Q) Fase 3 - Model Engineering",
+  "estacion": "Kennedy",
+  "objetivo": "target_24h",
+  "seed": 42,
+  "seleccion": "Menor MAE en la partición validation (mayo de 2026).",
+  "particiones": {
+    "train": {
+      "periodo_objetivo": [
+        "2026-01-03 00:00:00",
+        "2026-04-30 23:00:00"
+      ],
+      "muestras": 2373
+    },
+    "validation": {
+      "periodo_objetivo": [
+        "2026-05-01 00:00:00",
+        "2026-05-29 12:00:00"
+      ],
+      "muestras": 577
+    },
+    "test": "No cargado ni evaluado durante el ajuste de hiperparámetros."
+  },
+  "busqueda": {
+    "metodo": "GridSearchCV con PredefinedSplit: train ajusta y validation puntúa.",
+    "scoring": "neg_mean_absolute_error",
+    "preprocesamiento": "SimpleImputer(strategy='median') dentro del Pipeline.",
+    "n_jobs": -1
+  },
+  "modelos": [
+    {
+      "nombre": "RandomForestRegressor",
+      "mejores_hiperparametros": {
+        "model__max_depth": 10,
+        "model__max_features": "sqrt",
+        "model__min_samples_leaf": 1,
+        "model__min_samples_split": 2,
+        "model__n_estimators": 200
+      },
+      "mae_cv_validacion_ug_m3": 5.8356,
+      "metricas_validacion": {
+        "muestras_evaluadas": 577,
+        "mae_ug_m3": 5.8356,
+        "rmse_ug_m3": 7.1007,
+        "r2": 0.01
+      }
+    },
+    {
+      "nombre": "HistGradientBoostingRegressor",
+      "mejores_hiperparametros": {
+        "model__learning_rate": 0.05,
+        "model__max_iter": 100,
+        "model__max_leaf_nodes": 15
+      },
+      "mae_cv_validacion_ug_m3": 5.9656,
+      "metricas_validacion": {
+        "muestras_evaluadas": 577,
+        "mae_ug_m3": 5.9656,
+        "rmse_ug_m3": 7.1828,
+        "r2": -0.013
+      }
+    },
+    {
+      "nombre": "Persistencia",
+      "descripcion": "La predicción a 24 horas es la medición observada en el origen.",
+      "metricas_validacion": {
+        "muestras_evaluadas": 577,
+        "mae_ug_m3": 5.2634,
+        "rmse_ug_m3": 7.3008,
+        "r2": -0.0465
+      }
+    }
+  ],
+  "mejor_modelo_ml_validation": {
+    "nombre": "RandomForestRegressor",
+    "mejores_hiperparametros": {
+      "model__max_depth": 10,
+      "model__max_features": "sqrt",
+      "model__min_samples_leaf": 1,
+      "model__min_samples_split": 2,
+      "model__n_estimators": 200
+    },
+    "metricas_validacion": {
+      "muestras_evaluadas": 577,
+      "mae_ug_m3": 5.8356,
+      "rmse_ug_m3": 7.1007,
+      "r2": 0.01
+    }
+  },
+  "campeon_validation": {
+    "nombre": "Persistencia",
+    "mae_ug_m3": 5.2634,
+    "criterio": "Menor MAE en mayo entre Random Forest, HistGradientBoosting y persistencia."
+  }
+}

@@ -24,7 +24,13 @@ python -m venv .venv
 .\.venv\Scripts\python.exe src\main.py
 ```
 
-El último comando crea la partición, las variables y la línea base. Los archivos resultantes quedan en `data/` y `experiments/`.
+Los dos últimos comandos preparan la partición, las variables y la línea base. Para ejecutar el modelado de la Fase 3 después de esa preparación:
+
+```powershell
+.\.venv\Scripts\python.exe "src\entrenar modelos.py"
+```
+
+El script ajusta Random Forest y HistGradientBoosting con enero-abril y selecciona sus configuraciones por MAE en mayo. También los compara con la persistencia en mayo. No carga ni evalúa la partición de junio. Guarda las métricas y la configuración en `experiments/resultados ajuste de hiperparámetros.json`.
 
 Para explorar los resultados con gráficos, abre los cuadernos de `notebooks/` en orden y selecciona el entorno `.venv` como kernel.
 
@@ -51,7 +57,9 @@ La configuración de experimentos guarda `seed=42`. La línea base no usa aleato
 ## Carpetas
 
 - `data/`: datos de origen, datos limpios y resúmenes.
-- `src/`: scripts de preprocesamiento, preparación de variables y línea base.
+- `src/`: scripts de preprocesamiento, preparación de variables, línea base y modelado.
 - `notebooks/`: cuadernos de análisis exploratorio, variables y evaluación visual.
 - `experiments/`: configuración y resultados de la partición, las variables y la línea base.
-- `docs/`: bitácora de uso de IA.
+- `docs/`: documentación del proyecto.
+
+La Fase 3 requiere `scikit-learn`, incluido en `requirements.txt`.

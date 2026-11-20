@@ -28,7 +28,7 @@ def main():
     # Crea variables conocidas en el momento en que se inicia el pronóstico.
     # La hora y el día de la semana pueden representar patrones periódicos.
     datos["hora"] = datos["fecha_hora"].dt.hour
-    datos["dia_semana"] = datos["fecha_hora"].dt.dayofweek
+    datos["dia_semana"] = datos["fecha_hora"].dt.day_of_week
     # Usa mediciones observadas, no valores interpolados que podrían depender de datos futuros.
     datos["pm25_t"] = datos["pm25_original"]
     # Guarda como variable la medición de la fila anterior.
