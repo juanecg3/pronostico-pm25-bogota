@@ -1,0 +1,52 @@
+{
+  "experimento": "Ventanas móviles de 3 y 6 lecturas observadas; train enero-abril, validación mayo",
+  "semilla": 42,
+  "variables_entrada": [
+    "pm25_original",
+    "pm25_lag1",
+    "pm25_lag24",
+    "pm25_roll3",
+    "pm25_roll6",
+    "hora",
+    "dia_semana"
+  ],
+  "periodos": {
+    "entrenamiento_objetivo": [
+      "2026-01-03 00:00:00",
+      "2026-04-30 23:00:00"
+    ],
+    "validacion_objetivo": [
+      "2026-05-01 00:00:00",
+      "2026-05-29 12:00:00"
+    ]
+  },
+  "muestras": {
+    "train": 2373,
+    "validation_may": 577
+  },
+  "resultados_validacion_mayo": {
+    "persistencia": {
+      "mae": 5.2634,
+      "rmse": 7.3008,
+      "r2": -0.0465
+    },
+    "random_forest": {
+      "mejores_hiperparametros": {
+        "max_depth": 10,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1,
+        "min_samples_split": 5,
+        "n_estimators": 400
+      },
+      "mae": 5.7931,
+      "rmse": 6.9639,
+      "r2": 0.0478
+    },
+    "hist_gradient_boosting": {
+      "mae": 6.0426,
+      "rmse": 7.4611,
+      "r2": -0.093
+    }
+  },
+  "random_forest_mae_bajo_5_26": false
+}

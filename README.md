@@ -63,3 +63,9 @@ La configuración de experimentos guarda `seed=42`. La línea base no usa aleato
 - `docs/`: documentación del proyecto.
 
 La Fase 3 requiere `scikit-learn`, incluido en `requirements.txt`.
+
+## Evaluación final del modelo
+
+Para reproducir la búsqueda específica con medias móviles de las últimas 3 y 6 lecturas observadas, ejecuta `python "src/entrenar modelos ventanas.py"`. Sus resultados están en `experiments/resultados ajuste modelos.json`.
+
+La evaluación final de junio usa la configuración congelada en mayo y registra MAE, RMSE y R² en `experiments/evaluacion final prueba.json`. Las predicciones comparables de persistencia, Random Forest e HistGradientBoosting, con sus errores por hora, están en `experiments/predicciones detalladas prueba.csv`. Random Forest obtuvo MAE de 6.0465 µg/m³ en 580 pares comunes; la mejora frente a persistencia fue de 1.68%.

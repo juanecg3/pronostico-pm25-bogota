@@ -89,9 +89,20 @@ def main():
     # Marca las filas cuyo valor se completó mediante interpolación.
     datos["imputado"] = huecos_cortos & datos["pm25_limpio"].notna()
 
+    # Calcula ventanas sobre mediciones observadas (pm25_original), excluyendo
+    # horas sin lectura. El ffill solo propaga la última ventana ya calculada;
+    # nunca incorpora valores de una hora posterior.
+    observadas = datos["pm25_original"].dropna()
+    for ventana in (3, 6):
+        medias = observadas.rolling(window=ventana, min_periods=ventana).mean()
+        datos[f"pm25_roll{ventana}"] = medias.reindex(datos.index).ffill()
+
     # Guarda la serie procesada en CSV con las columnas necesarias.
     CARPETA_SALIDA.mkdir(exist_ok=True)
-    resultado = datos.reset_index()[["fecha_hora", "pm25_original", "pm25_limpio", "imputado"]]
+    resultado = datos.reset_index()[[
+        "fecha_hora", "pm25_original", "pm25_limpio", "imputado",
+        "pm25_roll3", "pm25_roll6",
+    ]]
     resultado.to_csv(ARCHIVO_SALIDA, index=False, encoding="utf-8")
 
     # Calcula estadísticas y construye el resumen del proceso en formato JSON.
