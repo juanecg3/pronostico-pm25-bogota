@@ -69,3 +69,8 @@ La Fase 3 requiere `scikit-learn`, incluido en `requirements.txt`.
 Para reproducir la búsqueda específica con medias móviles de las últimas 3 y 6 lecturas observadas, ejecuta `python "src/entrenar modelos ventanas.py"`. Sus resultados están en `experiments/resultados ajuste modelos.json`.
 
 La evaluación final de junio usa la configuración congelada en mayo y registra MAE, RMSE y R² en `experiments/evaluacion final prueba.json`. Las predicciones comparables de persistencia, Random Forest e HistGradientBoosting, con sus errores por hora, están en `experiments/predicciones detalladas prueba.csv`. Random Forest obtuvo MAE de 6.0465 µg/m³ en 580 pares comunes; la mejora frente a persistencia fue de 1.68%.
+
+
+## Análisis de errores de la prueba
+
+Ejecuta `python src/analisis_errores.py` para analizar descriptivamente las 580 predicciones de junio ya congeladas. El script genera `experiments/top10_errores_analisis.json` con los diez mayores residuos y sus hipótesis, y `experiments/grafico_residuos_top10.png` con la serie temporal y el histograma. El análisis no reentrena el modelo; las explicaciones causales son hipótesis porque los datos no incluyen meteorología ni tráfico.
