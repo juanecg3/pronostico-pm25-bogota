@@ -1,0 +1,7 @@
+{
+  "filas_validas_por_particion": {
+    "test": 580,
+    "train": 2373,
+    "validation": 577
+  }
+}

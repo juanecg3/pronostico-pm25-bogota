@@ -1,0 +1,21 @@
+{
+  "archivo_entrada": "datos.xls",
+  "estacion": "Kennedy",
+  "periodo_inicio": "2026-01-01 00:00:00",
+  "periodo_fin": "2026-07-01 00:00:00",
+  "filas_horarias": 4345,
+  "faltantes_iniciales": 347,
+  "valores_imputados_en_huecos_de_hasta_2_horas": 18,
+  "faltantes_restantes_en_bloques_largos_o_extremos": 329,
+  "estadisticas_pm25_ug_m3": {
+    "count": 4016.0,
+    "mean": 16.36,
+    "std": 10.37,
+    "min": 1.0,
+    "25%": 9.0,
+    "50%": 14.0,
+    "75%": 22.0,
+    "max": 147.0
+  },
+  "archivo_salida": "data/datos limpios.csv"
+}

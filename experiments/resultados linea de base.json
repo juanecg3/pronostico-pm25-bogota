@@ -1,0 +1,14 @@
+{
+  "modelo": "Persistencia: predicción igual a la medición 24 horas antes",
+  "estacion": "Kennedy",
+  "particion": "test (junio de 2026)",
+  "muestras_evaluadas": 580,
+  "fecha_objetivo_inicio": "2026-06-02 11:00:00",
+  "fecha_objetivo_fin": "2026-06-30 23:00:00",
+  "mae_ug_m3": 6.15,
+  "rmse_ug_m3": 8.5797,
+  "r2": -0.1517,
+  "semilla_configurada": 42,
+  "nota_semilla": "La persistencia es determinista; no utiliza números aleatorios.",
+  "nota_muestra": "Mismos 580 pares horarios válidos usados en la evaluación final de Random Forest e HistGradientBoosting."
+}
