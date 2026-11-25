@@ -1,0 +1,70 @@
+{
+  "descripcion": "Importancia por permutación en la prueba de junio; ranking descriptivo, no causal",
+  "metrica": "MAE; importancia = incremento del MAE al permutar una variable",
+  "semilla": 42,
+  "muestras_entrenamiento": 2950,
+  "muestras_prueba": 580,
+  "mae_rf_prueba_ug_m3": 6.0465,
+  "hiperparametros_congelados_de_validacion": {
+    "max_depth": 10,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 5,
+    "n_estimators": 400
+  },
+  "variables": [
+    "pm25_original",
+    "pm25_lag1",
+    "pm25_lag24",
+    "pm25_roll3",
+    "pm25_roll6",
+    "hora",
+    "dia_semana"
+  ],
+  "repeticiones_permutacion": 10,
+  "ranking_importancia": [
+    {
+      "ranking": 1,
+      "variable": "pm25_roll3",
+      "caida_media_mae_ug_m3": 1.1639,
+      "desviacion_estandar_ug_m3": 0.0627
+    },
+    {
+      "ranking": 2,
+      "variable": "pm25_original",
+      "caida_media_mae_ug_m3": 0.9382,
+      "desviacion_estandar_ug_m3": 0.0679
+    },
+    {
+      "ranking": 3,
+      "variable": "pm25_roll6",
+      "caida_media_mae_ug_m3": 0.8822,
+      "desviacion_estandar_ug_m3": 0.0944
+    },
+    {
+      "ranking": 4,
+      "variable": "pm25_lag1",
+      "caida_media_mae_ug_m3": 0.8418,
+      "desviacion_estandar_ug_m3": 0.0651
+    },
+    {
+      "ranking": 5,
+      "variable": "hora",
+      "caida_media_mae_ug_m3": 0.5889,
+      "desviacion_estandar_ug_m3": 0.0612
+    },
+    {
+      "ranking": 6,
+      "variable": "dia_semana",
+      "caida_media_mae_ug_m3": 0.29,
+      "desviacion_estandar_ug_m3": 0.0386
+    },
+    {
+      "ranking": 7,
+      "variable": "pm25_lag24",
+      "caida_media_mae_ug_m3": 0.1722,
+      "desviacion_estandar_ug_m3": 0.0533
+    }
+  ],
+  "nota": "La permutación se hizo en el mismo conjunto de junio ya evaluado. No se usó para ajustar el modelo ni elegir parámetros."
+}
