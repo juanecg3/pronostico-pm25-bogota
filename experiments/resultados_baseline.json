@@ -1,0 +1,12 @@
+{
+  "modelo": "Persistencia: predicción igual a la medición 24 horas antes",
+  "estacion": "Kennedy",
+  "particion": "test (junio de 2026)",
+  "muestras_evaluadas": 636,
+  "fecha_objetivo_inicio": "2026-06-01 11:00:00",
+  "fecha_objetivo_fin": "2026-06-30 23:00:00",
+  "mae_ug_m3": 5.92,
+  "rmse_ug_m3": 8.34,
+  "semilla_configurada": 42,
+  "nota_semilla": "La persistencia es determinista; no utiliza números aleatorios."
+}

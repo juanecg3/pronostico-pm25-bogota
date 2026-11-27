@@ -1,8 +1,3 @@
 .venv/
 __pycache__/
 *.py[cod]
-data/particion_temporal.csv
-data/datos_modelo.csv
-experiments/resumen_particion.json
-experiments/resumen_variables.json
-docs/bitácora de IA.md

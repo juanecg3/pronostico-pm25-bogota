@@ -1,5 +1,5 @@
 {
   "seed": 42,
-  "resumen_particion": "data/resumen particion.json",
-  "nota": "El flujo actual es determinista y no usa aleatoriedad. Esta semilla se usará en modelos aleatorios posteriores."
+  "resumen_particion": "experiments/resumen_particion.json",
+  "nota": "La semilla 42 se usa en Random Forest, HistGradientBoosting, GridSearch y la importancia por permutación. La persistencia es determinista."
 }

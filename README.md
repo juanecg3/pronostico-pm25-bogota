@@ -1,93 +1,81 @@
 # Pronóstico de PM2.5 en Bogotá
 
-Proyecto académico para preparar y pronosticar la concentración horaria de PM2.5 de la estación Kennedy.
+Proyecto académico de la asignatura Inteligencia Artificial (Universidad Tecnológica de Bolívar, ruta C: aprendizaje automático clásico). Pronostica la concentración horaria de PM2.5 con 24 horas de anticipación en la estación Kennedy de la Red de Monitoreo de Calidad del Aire de Bogotá (RMCAB) y compara un Random Forest y un HistGradientBoosting con la regla de persistencia.
 
-## Estado actual
+**Integrantes:** Juan Eduardo Caicedo Gómez (T00068444) y Cesar David Pinzon Arrieta (T00065994).
 
-El proyecto limpia los datos horarios de la estación Kennedy, crea una partición cronológica y calcula una línea base sencilla para pronosticar PM2.5 a 24 horas.
+> Ejercicio académico: no emite alertas ni sustituye el pronóstico oficial ni el IBOCA de la Secretaría Distrital de Ambiente (SDA).
 
-El archivo de origen `data/datos.xls` es una tabla HTML descargada con extensión `.xls`. El programa detecta ese formato y también puede leer archivos Excel normales.
+## Instalación y ejecución (4 comandos)
 
-## Requisitos
+Requisito: Python 3.11 o posterior. Desde la carpeta principal del repositorio:
 
-- Python 3.11 o posterior.
-- Windows y PowerShell para usar los comandos siguientes.
-
-## Instalación y ejecución
-
-Desde la carpeta principal del repositorio, ejecuta estos comandos:
+**Windows (PowerShell)**
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe src\preprocesamiento.py
-.\.venv\Scripts\python.exe "src\particion temporal.py"
-.\.venv\Scripts\python.exe "src\crear variables.py"
-.\.venv\Scripts\python.exe "src\linea base de persistencia.py"
+.\.venv\Scripts\python.exe src\main.py
+.\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-Los últimos tres comandos crean la partición, las variables y la línea base. Los archivos resultantes quedan en `data/` y `experiments/`.
+**Linux / macOS**
 
-Para repetir el ajuste y la evaluación de modelos:
-
-```powershell
-.\.venv\Scripts\python.exe "src\entrenar modelos.py"
-.\.venv\Scripts\python.exe "src\evaluar prueba.py"
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python src/main.py
+.venv/bin/python -m streamlit run app.py
 ```
 
-La evaluación usa los hiperparámetros elegidos en mayo, reentrena con objetivos de enero a mayo y mide una sola vez sobre objetivos de junio. No se ajustan parámetros con junio.
+El tercer comando ejecuta todo el flujo (unos 75 s) y regenera los archivos de `data/` y `experiments/`. Con `src/main.py --rapido` se omiten las dos búsquedas de hiperparámetros y se usan los ya guardados. El cuarto comando abre el prototipo web.
 
-El análisis pasivo de errores se ejecuta con `python src/analisis_errores.py`. Lee las 580 predicciones congeladas, guarda los diez mayores errores y estadísticas de residuos en `experiments/top10_errores_analisis.json`, y genera `experiments/grafico_residuos_top10.png` con la serie temporal y el histograma. Las explicaciones son hipótesis: el conjunto no incluye datos de clima o tráfico.
+## Flujo (`src/main.py`)
 
-## Explicabilidad y prototipo
+| Paso | Script | Salida principal |
+| --- | --- | --- |
+| 1. Preprocesamiento | `src/preprocesamiento.py` | `data/datos limpios.csv`, `data/resumen_preprocesamiento.json` |
+| 2. Partición temporal | `src/particion temporal.py` | `data/particion_temporal.csv`, `experiments/resumen_particion.json` |
+| 3. Variables | `src/crear variables.py` | `data/datos_modelo.csv`, `experiments/resumen_variables.json` |
+| 4. Línea base (Hito 2) | `src/linea base de persistencia.py` | `experiments/resultados_baseline.json` |
+| 5. Ajuste sin ventanas | `src/entrenar modelos.py` | `experiments/resultados ajuste de hiperparámetros.json` |
+| 6. Ajuste con ventanas (campeón) | `src/entrenar modelos ventanas.py` | `experiments/resultados ajuste modelos.json` |
+| 7. Evaluación final en junio | `src/evaluar prueba.py` | `experiments/evaluacion final prueba.json`, `experiments/predicciones detalladas prueba.csv` |
+| 8. 10 mayores errores | `src/analisis_errores.py` | `experiments/top10_errores_analisis.json`, `experiments/grafico_residuos_top10.png` |
+| 9. Explicabilidad | `src/explicabilidad.py` | `experiments/resultados explicabilidad.json`, `experiments/importancia variables.png` |
 
-Para calcular la importancia por permutación sobre las mismas 580 filas de prueba y generar los artefactos XAI:
+Todos los modelos aleatorios usan la semilla 42 (`experiments/config.json`). Ejecutar el flujo dos veces produce las mismas métricas.
 
-```powershell
-.\.venv\Scripts\python.exe src\explicabilidad.py
-```
+## Datos y preprocesamiento
 
-Los valores quedan en `experiments/resultados explicabilidad.json` y la figura en `experiments/importancia variables.png`. El script toma los hiperparámetros campeones del JSON de ajuste de mayo; en los resultados guardados son 400 árboles, profundidad 10, `min_samples_split=5`, hoja mínima 1 y `max_features=sqrt`.
+- Fuente: series horarias de PM2.5 de la estación Kennedy, descargadas del portal de la RMCAB (SDA). Son mediciones ambientales públicas, sin datos personales; se usan con atribución a la SDA (licencia CC BY 4.0 del catálogo de Datos Abiertos Bogotá).
+- `data/datos.xls` es una tabla HTML con extensión `.xls`; el programa detecta ese formato y también lee archivos Excel normales.
+- Periodo: 1 de enero a 1 de julio de 2026, 4.345 horas. Había 347 faltantes ("Sin data"): se interpolaron solo 18 huecos internos de una o dos horas y los 329 restantes se conservaron vacíos.
+- El objetivo `target_24h` y todas las variables (`pm25_original`, `pm25_lag1`, `pm25_lag24`, `pm25_roll3`, `pm25_roll6`, `hora`, `dia_semana`) se calculan solo con mediciones originales, para que ninguna dependa de interpolaciones que usan lecturas posteriores.
+- La partición se hace por fecha objetivo: enero-abril para entrenamiento, mayo para validación y junio para prueba.
 
-Para iniciar el prototipo desde la carpeta del proyecto:
+## Resultados
 
-```powershell
-streamlit run app.py
-```
+Evaluación final de una sola pasada sobre 580 pares válidos comunes de junio, con los hiperparámetros congelados en mayo (Random Forest: 400 árboles, `max_depth=10`, `max_features="sqrt"`, `min_samples_split=5`, `min_samples_leaf=1`) y reentrenamiento con enero-mayo (2.950 muestras):
 
-En Windows también se puede ejecutar con `\.venv\Scripts\python.exe -m streamlit run app.py`. La app ofrece consulta de predicciones de junio y simulación manual. La banda ambiental es orientativa: una predicción puntual a 24 h no basta para calcular el IBOCA oficial, que usa una media NowCast ponderada de 12 h para PM₂.₅ ([documentación oficial](https://iboca.ambientebogota.gov.co/publicaciones/175/que-es-el-iboca/)).
+| Método | MAE (µg/m³) | RMSE (µg/m³) | R² |
+| --- | --- | --- | --- |
+| Persistencia | 6.1500 | 8.5797 | -0.1517 |
+| HistGradientBoosting | 6.1137 | 7.6862 | 0.0757 |
+| Random Forest | 6.0465 | 7.3634 | 0.1517 |
 
-Para explorar los resultados con gráficos, abre los cuadernos de `notebooks/` en orden y selecciona el entorno `.venv` como kernel.
+El Random Forest mejoró el MAE en 1.68 % frente a la persistencia, por lo que **no alcanzó** el criterio definido en el Hito 1 (mejora ≥ 10 %, MAE ≤ 5.33 µg/m³). Sí redujo el RMSE en 14.2 %. El mayor error fue de 41.01 µg/m³ (pico del 18 de junio a las 07:00). Las explicaciones de los errores son hipótesis: el conjunto no incluye clima ni tráfico.
 
-## ¿Qué hace el preprocesamiento?
+Nota: el MAE de persistencia del Hito 2 (5.92 µg/m³, `experiments/resultados_baseline.json`) se calculó sobre 636 pares. La evaluación final usa 580 porque exige que también existan las ventanas móviles y el rezago de 24 h.
 
-1. Lee los datos de la estación Kennedy y organiza las horas en orden.
-2. Convierte los textos `Sin data` en valores vacíos.
-3. Interpola solo huecos internos de una o dos horas.
-4. Conserva como vacíos los bloques largos y los extremos sin medición.
-5. Calcula `pm25_roll3` y `pm25_roll6` con las últimas tres y seis mediciones originales observadas, respectivamente, y guarda la tabla limpia en `data/datos limpios.csv`.
+## Prototipo
 
-En esta descarga hay 4.345 horas entre el 1 de enero y el 1 de julio de 2026. Se imputaron 18 valores en huecos cortos; 329 faltantes se conservaron sin completar.
-
-## Variables y evaluación
-
-- `target_24h` es la medición original 24 horas después de la hora de origen.
-- Las filas se separan por la fecha que se pronostica: enero-abril para train, mayo para validation y junio para test.
-- Se crean la hora, el día de la semana y la concentración observada actual y sus retardos de una y 24 horas. Así las variables no dependen de interpolaciones que usan una lectura posterior.
-- La persistencia predice que el valor dentro de 24 horas será igual a la medición actual.
-- MAE y RMSE se calculan en test usando pares de mediciones originales disponibles; los valores imputados no se cuentan como mediciones reales.
-- El ajuste de modelos y sus métricas de validación de mayo se guardan en `experiments/resultados ajuste modelos.json`.
-- La evaluación final de junio se registra en `experiments/evaluacion final prueba.json`; las predicciones de los tres métodos y sus errores por fila quedan en `experiments/predicciones detalladas prueba.csv`.
-- Para ejecutar la evaluación final: `python "src/evaluar prueba.py"`. La configuración de Random Forest se congela desde los resultados de mayo.
-
-En la evaluación final registrada, se usaron 2.950 muestras de entrenamiento, con objetivos disponibles del 3 de enero al 29 de mayo a las 12:00, y 580 pares válidos comunes de junio. Random Forest obtuvo MAE 6.0465, RMSE 7.3634 y R² 0.1517; persistencia obtuvo MAE 6.1500 y HistGradientBoosting MAE 6.1137. Random Forest mejoró 1.68% frente a persistencia, por lo que no alcanzó la mejora del 10% ni el umbral de MAE ≤ 5.33 µg/m³. La muestra evaluada cubrió del 2 de junio 11:00 al 30 de junio 23:00 por disponibilidad de pares completos.
-
-La configuración de experimentos guarda `seed=42`. La línea base no usa aleatoriedad, pero la semilla quedará disponible para los modelos posteriores.
+`app.py` (Streamlit) permite consultar las predicciones de junio y simular un pronóstico con valores manuales. La banda ambiental que muestra es orientativa: el IBOCA oficial para PM2.5 usa una media NowCast ponderada de 12 h, no una predicción puntual a 24 h ([documentación oficial](https://iboca.ambientebogota.gov.co/publicaciones/175/que-es-el-iboca/)).
 
 ## Carpetas
 
-- `data/`: datos de origen, datos limpios y resúmenes.
-- `src/`: scripts de preprocesamiento, preparación de variables, entrenamiento y evaluación final.
-- `notebooks/`: cuadernos de análisis exploratorio, variables y evaluación visual.
-- `experiments/`: configuración y resultados de la partición, las variables y la línea base.
-- `docs/`: bitácora de uso de IA.
+- `data/`: datos de origen, datos limpios, partición y variables.
+- `src/`: scripts del flujo (`main.py` los ejecuta en orden) y `modelo_pm25.py`, compartido por la explicabilidad y la app.
+- `notebooks/`: análisis exploratorio, correlación y retardos, y verificación de la línea base. Ejecutar el flujo antes de abrirlos.
+- `experiments/`: configuración, métricas, predicciones y figuras que respaldan cada tabla del informe.
+- `docs/`: bitácora humano-IA (`bitacora_ia.md`) e informe técnico final (`pronostico_pm25_bogota_hito3.pdf`).
